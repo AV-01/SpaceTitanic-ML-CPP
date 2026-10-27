@@ -10,7 +10,7 @@ struct Passenger {
     string homePlanet;
     int cryoSleep;
     string deck;
-    string cabin_num;
+    int cabin_num;
     string side;
     string destination;
     float age;
@@ -24,8 +24,9 @@ struct Passenger {
 
     // won't exist for the test dataset, figure out how to deal with that later
     int transported;
+    bool has_label = false;
 };
 
-Passenger processPassenger(const vector<string>& row);
+Passenger processPassenger(const vector<string>& row, bool has_label);
 
 #endif // PASSENGERS_HPP
