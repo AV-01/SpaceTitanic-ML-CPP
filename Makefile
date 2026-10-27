@@ -4,41 +4,33 @@ PRJ_NAME := Space Titanic ML C++
 PRJ_ROOT        := $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 PRJ_SOURCE_CODE := ${PRJ_ROOT}/src
 PRJ_INCLUDE_CODE := ${PRJ_ROOT}/include
-PRJ_OUTPUT_DIR  := ${PRJ_ROOT}/build
-PRJ_OBJECTS_DIR := ${PRJ_OUTPUT_DIR}/objects
-INCLUDES        += -I${PRJ_SOURCE_CODE} -I${PRJ_SOURCE_CODE}
+PRJ_OUTPUT_DIR  := ${PRJ_ROOT}/bin
+PRJ_OBJECTS_DIR := ${PRJ_ROOT}/build/objects
+INCLUDES        := -I${PRJ_INCLUDE_CODE} -I${PRJ_SOURCE_CODE}
+
+### Compiler & Flags ###
+CXX             := g++
+CXXFLAGS        := -std=c++20 -Wall -Wextra -Werror -pedantic -g
 
 ### Derived Variables ###
-CPP_SRC_FILES   := $(shell find -L $(PRJ_SOURCE_CODE) -type f -name "*.cpp"  -print)                # All C++ files
-CPP_OBJECTS     := $(patsubst $(PRJ_SOURCE_CODE)/%.cpp,$(PRJ_OBJECTS_DIR)/%.o, $(CPP_SRC_FILES))    # All C++ objects
+CPP_SRC_FILES   := $(shell find -L $(PRJ_SOURCE_CODE) -type f -name "*.cpp" -print)
+CPP_OBJECTS     := $(patsubst $(PRJ_SOURCE_CODE)/%.cpp,$(PRJ_OBJECTS_DIR)/%.o, $(CPP_SRC_FILES))
 
 ### Targets ###
-# Complete build
+.PHONY: all exec clean
 
-# easy build, but will need to constantly update
-exec:
-	mkdir bin
-	clang++ -std=c++17 -o bin/exec src/main.cpp
+all: exec
 
-all: $(CPP_OBJECTS)
-	@echo "Executing target '$@' for project '${PRJ_NAME}'"
+exec: ${PRJ_OUTPUT_DIR}/exec
 
-	@g++ -o ${PRJ_OUTPUT_DIR}/${PRJ_NAME}.elf $(CPP_OBJECTS)
+${PRJ_OUTPUT_DIR}/exec: $(CPP_OBJECTS)
+	@mkdir -p $(PRJ_OUTPUT_DIR)
+	${CXX} ${CXXFLAGS} ${INCLUDES} $(CPP_OBJECTS) -o $@
+	@echo "Built executable: $@"
 
-	@echo "Finished executing the target '$@' for project '${PRJ_NAME}'"
-
-clean: 
-	@echo "Executing target '$@' for project '${PRJ_NAME}'"
-
-	rm -rf ${PRJ_OBJECTS_DIR}
-
-	@echo "Finished cleaning the target '$@' for project '${PRJ_NAME}'"
-
-# Generic C/C++ files build target (Object generation)
-${PRJ_OBJECTS_DIR}/%.o : $(PRJ_SOURCE_CODE)/%.cpp
-	@echo "Building '$<' for project '${PRJ_NAME}'"
-
+${PRJ_OBJECTS_DIR}/%.o: ${PRJ_SOURCE_CODE}/%.cpp
 	@mkdir -p $(@D)
-	@g++ $(INCLUDES) -c $< -o $@
+	${CXX} ${CXXFLAGS} ${INCLUDES} -c $< -o $@
 
-	@echo "Built '$<' for project '${PRJ_NAME}'"
+clean:
+	rm -rf ${PRJ_ROOT}/build ${PRJ_OUTPUT_DIR}/exec

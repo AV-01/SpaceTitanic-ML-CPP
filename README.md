@@ -8,6 +8,8 @@ to do:
 - create way to train a model/do lin alg
 - submit(?)
 
+reference the reference.ipynb for ML process in python
+
 credits:
 - https://gist.github.com/CaglayanDokme/a90aec08b5da8d4edc9fc8a3173bd1f7
  for makefile
